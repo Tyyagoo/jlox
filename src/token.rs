@@ -29,9 +29,9 @@ pub enum TokenType<'a> {
 
 #[derive(Debug)]
 pub struct Token<'a> {
-    t: TokenType<'a>,
-    lexeme: &'a str,
-    line: usize
+    pub t: TokenType<'a>,
+    pub lexeme: &'a str,
+    pub line: usize
 }
 
 impl<'a> Token<'a> {
