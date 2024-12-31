@@ -1,0 +1,4 @@
+var hello = "this is an multiline
+string"
+
+(true and false) == false
