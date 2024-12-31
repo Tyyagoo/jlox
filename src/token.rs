@@ -5,7 +5,7 @@ use std::fmt::{self, Display};
 
 use TokenType::*;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum TokenType<'a> {
     // Single-char tokens
     LeftParen, RightParen, LeftBrace, RightBrace,

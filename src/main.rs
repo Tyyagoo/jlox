@@ -3,15 +3,15 @@ mod lexer;
 mod parser;
 mod token;
 
-use clap::Parser;
+use clap::Parser as ClapParser;
 use clio::{Input, Result};
 use lexer::Lexer;
 use std::io::{self, BufRead, Read};
 
-use parser::{AstPrinter, Expr::*};
-use token::{Token, TokenType};
+use parser::{AstPrinter, Parser};
+// use token::{Token, TokenType};
 
-#[derive(Parser, Debug)]
+#[derive(ClapParser, Debug)]
 #[command(name = "lox")]
 struct Args {
     #[clap(value_parser, default_value = "-")]
@@ -21,20 +21,20 @@ struct Args {
 fn main() -> Result<()> {
     let mut args = Args::parse();
 
-    let expr = Binary(
-        Box::new(Unary(
-            Token::new(TokenType::Minus, "-", 1),
-            Box::new(Literal(Token::new(TokenType::Num(123.0), "123", 1))),
-        )),
-        Token::new(TokenType::Star, "*", 1),
-        Box::new(Grouping(Box::new(Literal(Token::new(
-            TokenType::Num(45.67),
-            "45.67",
-            1,
-        ))))),
-    );
+    // let expr = Binary(
+    //     Box::new(Unary(
+    //         Token::new(TokenType::Minus, "-", 1),
+    //         Box::new(Literal(Token::new(TokenType::Num(123.0), "123", 1))),
+    //     )),
+    //     Token::new(TokenType::Star, "*", 1),
+    //     Box::new(Grouping(Box::new(Literal(Token::new(
+    //         TokenType::Num(45.67),
+    //         "45.67",
+    //         1,
+    //     ))))),
+    // );
 
-    println!("{}", AstPrinter::print(&expr));
+    // println!("{}", AstPrinter::print(&expr));
 
     if args.input.is_std() {
         let stdin = io::stdin();
@@ -46,11 +46,12 @@ fn main() -> Result<()> {
                     let lexer = Lexer::new(source.as_str());
                     let tokens = lexer.tokenize();
 
-                    for token in tokens {
-                        print!("{:?} ", token);
-                    }
+                    let mut parser = Parser::new(tokens.iter().collect());
+                    let expressions = parser.parse();
 
-                    println!();
+                    for expr in expressions {
+                        println!("{:?}", AstPrinter::print(&expr));
+                    }
                 }
 
                 None => {}
@@ -62,12 +63,12 @@ fn main() -> Result<()> {
 
         let lexer = Lexer::new(source.as_str());
         let tokens = lexer.tokenize();
+        let mut parser = Parser::new(tokens.iter().collect());
+        let expressions = parser.parse();
 
-        for token in tokens {
-            print!("{:?} ", token);
-        }
-
-        println!();
+        // for expr in expressions {
+        //     println!("{:?}", AstPrinter::print(&expr));
+        // }
     }
 
     Ok(())
